@@ -331,6 +331,10 @@ createUi = function()
 			content = { buildings.turret, buildings.copper_turret, buildings.turret_v2, buildings.turret_sniper },
 		},
 	}
+
+    for i=1, #pages do
+        pages[i].content[#pages[i].content+1] = buildings.remover
+    end
 	local offsetX = 0
 
 	refreshPage = function()
@@ -621,6 +625,7 @@ building = function(config)
 	building.name = config.name
 	building.description = config.description
 	building.health = 5
+    building.costs = config.costs
 
 	print(round(building.Position.X/5))
 	print(round(building.Position.Z/5))
@@ -856,11 +861,20 @@ Pointer.Click = function(pointerEvent)
 			end
 			if selectedItem ~= connections.conveyor then
 				if selectedItem ~= connections.cable then
-					if selectedItem ~= "remove" then
+					if selectedItem.itemtype ~= "remover" then
 						return
 					end
 				end
 			end
+            if selectedItem.itemtype == "remover" then
+
+                for key, value in pairs(obj.costs) do
+                    inventory[key] = inventory[key] + round(obj.costs[key]/2)
+                end
+                obj:destroy()
+
+                return
+            end
 			if not placingConnection then
 				if obj.typeOut == selectedItem.icon then
 					if obj.hasOut then
@@ -1075,6 +1089,31 @@ loadEverything = function()
 	}
 
 	buildings = {
+        remover = {
+			rotation = Rotation(0, 0, 0),
+			scale = Number3(0.833, 0.833, 0.833),
+			type = "Remover",
+			id = newId(),
+			shape = "nanskip.conv_mine",
+			inputs = {},
+			outputs = {},
+			container = {},
+			hasIn = false,
+			typeIn = "none",
+			hasOut = true,
+			typeOut = "conveyor",
+			tick = function(self) end,
+			start = function(self)
+                print("You should click on building to remove it.")
+			end,
+
+			name = "Remover",
+			description = "you really can't see\nthis message",
+			costs = {},
+			icon = "remover",
+			object = Shape(Items.nanskip.conv_mine),
+			itemtype = "remover",
+		},
 		mine = {
 			rotation = Rotation(0, 0, 0),
 			scale = Number3(0.833, 0.833, 0.833),
