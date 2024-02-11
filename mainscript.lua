@@ -94,6 +94,7 @@ load = function()
 		"https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/generator_v2_icon.png"
 	)
 	loadImage("conveyor", "https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/conveyor_icon.png")
+    loadImage("remover", "https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/remover_icon.png")
 	loadImage("cable", "https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/cable_icon.png")
 	loadImage("turret", "https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/turret_icon.png")
 	loadImage(
