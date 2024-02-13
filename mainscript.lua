@@ -108,6 +108,14 @@ load = function()
 		"conveyor_spot",
 		"https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/conveyor_spot_icon.png"
 	)
+	loadImage(
+		"wood_wall",
+		"https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/wood_wall_icon.png"
+	)
+	loadImage(
+		"stone_wall",
+		"https://raw.githubusercontent.com/Nanskipp/tech-game/main/images/icon/stone_wall_icon.png"
+	)
 end
 
 loadShapes = function()
@@ -316,20 +324,20 @@ createUi = function()
 
 	pages = {
 		{
-			name = "Drills",
-			content = { buildings.mine, buildings.mine_v2 },
+			name = "Resources",
+			content = { buildings.mine, buildings.mine_v2, buildings.generator, buildings.generator_v2},
 		},
 		{
-			name = "Generators",
-			content = { buildings.generator, buildings.generator_v2 },
+			name = "Turrets",
+			content = { buildings.turret, buildings.copper_turret, buildings.turret_v2, buildings.turret_sniper },
 		},
 		{
 			name = "Connections",
 			content = { connections.conveyor, connections.cable, buildings.conveyor_spot, buildings.electicity_pole },
 		},
 		{
-			name = "Turrets",
-			content = { buildings.turret, buildings.copper_turret, buildings.turret_v2, buildings.turret_sniper },
+			name = "Walls",
+			content = { buildings.wood_wall, buildings.stone_wall },
 		},
 	}
 
@@ -570,32 +578,31 @@ end
 building = function(config)
 	local building = Object()
 
-	if config == nil then
-		config = {
-			Position = Number3(0, 0, 0),
-			Rotation = Rotation(0, 0, 0),
-			Scale = Number3(5, 5, 5),
-			type = "none",
-			id = 0,
-			shape = "nanskip.red_voxel",
-			inputs = {},
-			outputs = {},
-			container = {},
-			hasIn = {},
-			typeIn = "none",
-			hasOut = {},
-			typeOut = "none",
-			icon = nil,
-			Tick = function(self) end,
-			start = function(self)
-				print(self)
-				World:AddChild(self)
-			end,
+	local defaultConfig = {
+		Position = Number3(0, 0, 0),
+		Rotation = Rotation(0, 0, 0),
+		Scale = Number3(5, 5, 5),
+		type = "none",
+		id = 0,
+		shape = "nanskip.red_voxel",
+		inputs = {},
+		outputs = {},
+		container = {},
+		hasIn = {},
+		typeIn = "none",
+		hasOut = {},
+		typeOut = "none",
+		icon = nil,
+		Tick = function(self) end,
+		start = function(self)
+			print(self)
+			World:AddChild(self)
+		end,
 
-			name = "blank",
-			costs = { coins = { 1 } },
-		}
-	end
+		name = "blank",
+		costs = { coins = { 1 } },
+		health = 5
+	}
 
 	Object:Load(config.shape, function(obj, config)
 		obj.Pivot = Number3(0, 0, 0)
@@ -605,28 +612,28 @@ building = function(config)
 		building:start()
 	end)
 
-	building.Position = config.position
-	building.Rotation = config.rotation
-	building.Scale = config.scale
-	building.type = config.type
-	building.id = config.id
-	building.Tick = config.tick
-	building.start = config.start
-	building.inputs = clone(config.inputs)
-	building.outputs = clone(config.outputs)
-	building.hasIn = config.hasIn
-	building.typeIn = config.typeIn
-	building.hasOut = config.hasOut
-	building.typeOut = config.typeOut
-	building.container = clone(config.container)
-	building.icon = config.icon
-	building.object = config.object
-	building.itemtype = config.itemtype
+	building.Position = config.position or defaultConfig.position
+	building.Rotation = config.rotation or defaultConfig.rotation
+	building.Scale = config.scale or defaultConfig.scale
+	building.type = config.type or defaultConfig.type
+	building.id = config.id or defaultConfig.id
+	building.Tick = config.tick or defaultConfig.tick
+	building.start = config.start or defaultConfig.start
+	building.inputs = clone(config.inputs) or clone(defaultConfig.inputs)
+	building.outputs = clone(config.outputs) or clone(defaultConfig.outputs)
+	building.hasIn = config.hasIn or defaultConfig.hasIn
+	building.typeIn = config.typeIn or defaultConfig.typeIn
+	building.hasOut = config.hasOut or defaultConfig.hasOut
+	building.typeOut = config.typeOut or defaultConfig.typeOut
+	building.container = clone(config.container) or clone(defaultConfig.container)
+	building.icon = config.icon or defaultConfig.icon
+	building.object = config.object or defaultConfig.object
+	building.itemtype = config.itemtype or defaultConfig.itemtype
 	building.connected = {}
-	building.name = config.name
-	building.description = config.description
-	building.health = 5
-    building.costs = config.costs
+	building.name = config.name or defaultConfig.name
+	building.description = config.description or "placeholder"
+	building.health = config.health or defaultConfig.health
+    building.costs = config.costs or defaultConfig.costs
 
 	print(round(building.Position.X/5))
 	print(round(building.Position.Z/5))
@@ -1114,6 +1121,64 @@ loadEverything = function()
 			icon = "remover",
 			object = Shape(Items.nanskip.conv_mine),
 			itemtype = "remover",
+		},
+		wood_wall = {
+			rotation = Rotation(0, 0, 0),
+			scale = Number3(0.833, 0.833, 0.833),
+			type = "wall",
+			id = newId(),
+			shape = "nanskip.conv_wood_wall",
+			inputs = {},
+			outputs = {},
+			container = {},
+			hasIn = false,
+			typeIn = "none",
+			hasOut = false,
+			typeOut = "none",
+			health = 30,
+			tick = function(self)
+				if self.health <= 0 then
+					self:destroy()
+				end
+			end,
+			start = function(self)
+				World:AddChild(self)
+			end,
+
+			name = "Wood\nWall",
+			description = "Just a wood wall.\nHas 30 health points.",
+			costs = { coins = 50 },
+			icon = "wood_wall",
+			object = Shape(Items.nanskip.conv_mine),
+			itemtype = "building",
+		},
+		stone_wall = {
+			rotation = Rotation(0, 0, 0),
+			scale = Number3(0.833, 0.833, 0.833),
+			type = "wall",
+			id = newId(),
+			shape = "nanskip.conv_stone_wall",
+			inputs = {},
+			outputs = {},
+			container = {},
+			hasIn = false,
+			typeIn = "none",
+			hasOut = false,
+			typeOut = "none",
+			health = 100,
+			tick = function(self)
+				if self.health <= 0 then
+					self:destroy()
+				end
+			end,
+			start = function(self)
+				World:AddChild(self)
+			end,
+			name = "Stone\nWall",
+			description = "Just a wood wall.\nHas 100 health points.",
+			costs = { coins = 300 },
+			icon = "stone_wall",
+			itemtype = "building",
 		},
 		mine = {
 			rotation = Rotation(0, 0, 0),
