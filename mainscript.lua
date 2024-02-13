@@ -64,6 +64,8 @@ load = function()
 	map = {}
 	mapBuildings = {}
 
+	if Client.IsMobile then textSize = "small" else textSize = "default" end
+
 	for i=1, config.mapSize[1] do
 		mapBuildings[i] = {}
 	end
@@ -213,11 +215,11 @@ tick = function(dt)
 
 		gameover2 = ui:createText(
 			"     GAME OVER\ni have no time\nto implement game restart,\nso just rejoin the game\npls:)",
-			Color(0, 0, 0)
+			Color(0, 0, 0), textSize
 		)
 		gameover = ui:createText(
 			"     GAME OVER\ni have no time\nto implement game restart,\nso just rejoin the game\npls:)",
-			Color(255, 255, 255)
+			Color(255, 255, 255), textSize
 		)
 		gameover.pos = Number2(Screen.Width / 2 - gameover.Width / 2, Screen.Height / 2 - gameover.Height / 2)
 		gameover2.pos = Number2(gameover.pos.X + 1, gameover.pos.Y - 1)
@@ -276,7 +278,7 @@ createUi = function()
 		inventoryBGoffset = 0
 	end
 	inventoryBG = ui:createFrame(Color(0, 0, 0, 0.6))
-	inventoryBG.pos = Number2(inventoryBGoffset, 0)
+	inventoryBG.pos = Number2(inventoryBGoffset, 0 - Screen.SafeArea.Bottom)
 	inventoryBG.Width, inventoryBG.Height = Screen.Width - inventoryBGoffset, Screen.Height * 0.2 + 10
 	inventoryBG.onPress = function(_)
 		return
@@ -294,14 +296,14 @@ createUi = function()
 		fpsShower:setParent(nil)
 	end
 	fpsShowerbg = ui:createFrame(Color(0, 0, 0, 0.6))
-	fpsShower = ui:createText("FPS: 60", Color(200, 200, 200))
+	fpsShower = ui:createText("FPS: 60", Color(200, 200, 200), textSize)
 	fpsShower.pos =
 		Number2(Screen.Width - fpsShower.Width - 8, Screen.Height - Screen.SafeArea.Top - fpsShower.Height - 8)
 	fpsShowerbg.pos = Number2(fpsShower.pos.X - 8, fpsShower.pos.Y - 8)
 	fpsShowerbg.Width = fpsShower.Width + 16
 	fpsShowerbg.Height = fpsShower.Height + 16
 
-	healthBar = ui:createText("health placeholder", Color(255, 0, 0))
+	healthBar = ui:createText("health placeholder", Color(255, 0, 0), textSize)
 	healthBar.pos = Number2(8 - inventoryBGoffset, Screen.Height - healthBar.Height - 48)
 	healthBar:setParent(inventoryBG)
 
@@ -313,8 +315,8 @@ createUi = function()
 	inventoryContainer = ui:createFrame(Color(0, 0, 0, 0.6))
 	inventoryContainer:setParent(inventoryBG)
 
-	inventoryContainerText = ui:createText(inventoryText, Color(255, 255, 255))
-	inventoryContainerText.pos = Number2(Screen.Width / 2 - inventoryContainerText.Width / 2, Screen.Height * 0.9)
+	inventoryContainerText = ui:createText(inventoryText, Color(255, 255, 255), textSize)
+	inventoryContainerText.pos = Number2(Screen.Width / 2, Screen.Height - Screen.SafeArea.Top - inventoryContainerText.Height - 8)
 	inventoryContainerText:setParent(inventoryBG)
 
 	inventoryContainer.Width = inventoryContainerText.Width + 32
@@ -360,7 +362,7 @@ createUi = function()
 
 		for i = 1, #pages[selectedPage].content do
 			selectButton = ui:createFrame(Color(0, 0, 0, 0.3))
-			selectButton.pos = Number2(offsetX, 18)
+			selectButton.pos = Number2(offsetX, 18 + Screen.SafeArea.Bottom)
 			selectButton.onPress = function(_)
 				selectedItem = pages[selectedPage].content[i]
 				clickSound:Play()
@@ -380,7 +382,7 @@ createUi = function()
 				selectButton.line:setParent(selectButton)
 			end
 
-			selectButton.text = ui:createText(pages[selectedPage].content[i].name, Color(255, 255, 255))
+			selectButton.text = ui:createText(pages[selectedPage].content[i].name, Color(255, 255, 255), textSize)
 			selectButton.text:setParent(selectButton)
 			selectButton.text.pos = Number2(4, 0)
 
@@ -388,7 +390,7 @@ createUi = function()
 			if price == nil then
 				price = 0
 			end
-			selectButton.price = ui:createText(price, Color(255, 255, 0), "small")
+			selectButton.price = ui:createText(price, Color(255, 255, 0), textSize)
 			selectButton.price:setParent(selectButton)
 			selectButton.price.pos = Number2(4, selectButton.Height - selectButton.price.Height - 4)
 
@@ -438,14 +440,14 @@ updateUi = function()
 	inventoryContainerText.object.Text = inventoryText
 	inventoryBG.pos.Y = Screen.SafeArea.Bottom
 	healthBar.object.Text = "Health: " .. globalHealth
-	healthBar.pos = Number2(8 - inventoryBGoffset, Screen.Height - healthBar.Height - 8 - Screen.SafeArea.Top)
+	healthBar.pos = Number2(8 - inventoryBGoffset, Screen.Height - healthBar.Height - 8 - Screen.SafeArea.Top - Screen.SafeArea.Bottom)
 	inventoryContainerText.pos = Number2(
 		Screen.Width / 2 - inventoryContainerText.Width / 2 - inventoryBGoffset,
-		Screen.Height - Screen.SafeArea.Top - inventoryContainerText.Height - 6
+		Screen.Height - Screen.SafeArea.Top - inventoryContainerText.Height - 6 - Screen.SafeArea.Bottom
 	)
 	inventoryContainer.pos = Number2(
 		Screen.Width / 2 - inventoryContainerText.Width / 2 - 16 - inventoryBGoffset,
-		Screen.Height - Screen.SafeArea.Top - inventoryContainerText.Height - 16
+		Screen.Height - Screen.SafeArea.Top - inventoryContainerText.Height - 16 - Screen.SafeArea.Bottom
 	)
 
 	inventoryContainer.Width = inventoryContainerText.Width + 32
@@ -488,6 +490,7 @@ createStatus = function(obj)
 		obj.name = "name placeholder"
 		obj.description = "description placeholder"
 		obj.container = { placeholder = 0 }
+		obj.health = "placeholder"
 	end
 
 	statusBG = ui:createFrame(Color(0, 0, 0, 0.6))
@@ -496,7 +499,7 @@ createStatus = function(obj)
 	statusBG.pos = Number2(Screen.Width - statusBG.Width, inventoryBG.Height)
 
 	statusNameBG = ui:createFrame(Color(0, 0, 0, 0.2))
-	statusName = ui:createText(string.gsub(obj.name, "\n", " "), Color(255, 255, 255), "big")
+	statusName = ui:createText(string.gsub(obj.name, "\n", " "), Color(255, 255, 255), textSize)
 	statusName.pos = Number2(8, statusBG.Height - statusName.Height - 4)
 	statusNameBG:setParent(statusBG)
 	statusName:setParent(statusBG)
@@ -504,7 +507,7 @@ createStatus = function(obj)
 	statusNameBG.Width = statusBG.Width
 	statusNameBG.Height = statusName.Height + 8
 
-	statusDescription = ui:createText(obj.description, Color(255, 255, 255), "small")
+	statusDescription = ui:createText(obj.description, Color(255, 255, 255), textSize)
 	statusDescription.pos = Number2(8, statusBG.Height - statusName.Height - statusDescription.Height - 4)
 	statusDescription:setParent(statusBG)
 
@@ -512,7 +515,8 @@ createStatus = function(obj)
 	for key, value in pairs(obj.container) do
 		containerText = containerText .. key .. ": " .. value
 	end
-	statusContainer = ui:createText(containerText, Color(255, 255, 255))
+	containerText = containerText .. "\nHealth: " .. obj.health
+	statusContainer = ui:createText(containerText, Color(255, 255, 255), textSize)
 	statusContainer.pos = Number2(8, 8)
 	statusContainer:setParent(statusBG)
 end
@@ -526,6 +530,7 @@ refreshStatus = function(obj)
 	for key, value in pairs(obj.container) do
 		containerText = containerText .. key .. ": " .. value .. "\n"
 	end
+	containerText = containerText .. "\nHealth: " .. round(obj.health)
 	statusContainer.object.Text = containerText
 
 	local statHeight = statusNameBG.Height + statusDescription.Height + statusContainer.Height
@@ -635,10 +640,7 @@ building = function(config)
 	building.health = config.health or defaultConfig.health
     building.costs = config.costs or defaultConfig.costs
 
-	print(round(building.Position.X/5))
-	print(round(building.Position.Z/5))
 	mapBuildings[round(building.Position.X/5)][round(building.Position.Z/5)] = building
-	print(mapBuildings[round(building.Position.X/5)][round(building.Position.Z/5)])
 
 	building.destroy = function(self)
 		if firstBuilding == self then
