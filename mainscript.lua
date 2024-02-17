@@ -622,7 +622,7 @@ building = function(config)
 	building.Scale = config.scale or defaultConfig.scale
 	building.type = config.type or defaultConfig.type
 	building.id = config.id or defaultConfig.id
-	building.Tick = config.tick or defaultConfig.tick
+	building.tick = config.tick or defaultConfig.tick
 	building.start = config.start or defaultConfig.start
 	building.inputs = clone(config.inputs) or clone(defaultConfig.inputs)
 	building.outputs = clone(config.outputs) or clone(defaultConfig.outputs)
@@ -640,7 +640,12 @@ building = function(config)
 	building.health = config.health or defaultConfig.health
     building.costs = config.costs or defaultConfig.costs
 
+	building.Tick = function(self)
+		self:tick()
+	end
+
 	mapBuildings[round(building.Position.X/5)][round(building.Position.Z/5)] = building
+
 
 	building.destroy = function(self)
 		if firstBuilding == self then
@@ -1526,8 +1531,7 @@ loadEverything = function()
 				self.obj.Shadow = true
 			end,
 
-			name = [[Basic
-Generator]],
+			name = "Basic\nGenerator",
 			description = "Generates energy\nusing coal.",
 			costs = { coins = 20 },
 			icon = "basic_generator",
